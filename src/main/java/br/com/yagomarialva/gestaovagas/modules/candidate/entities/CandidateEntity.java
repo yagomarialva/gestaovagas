@@ -1,4 +1,4 @@
-package br.com.yagomarialva.gestaovagas.modules.candidate;
+package br.com.yagomarialva.gestaovagas.modules.candidate.entities;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

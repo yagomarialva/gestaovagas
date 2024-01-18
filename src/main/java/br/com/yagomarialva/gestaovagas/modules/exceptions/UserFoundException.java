@@ -1,4 +1,4 @@
-package br.com.yagomarialva.gestaovagas.modules.candidate;
+package br.com.yagomarialva.gestaovagas.modules.exceptions;
 
 public class UserFoundException extends RuntimeException {
     public UserFoundException(){

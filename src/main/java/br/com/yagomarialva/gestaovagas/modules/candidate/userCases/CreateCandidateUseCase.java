@@ -11,43 +11,34 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import br.com.yagomarialva.gestaovagas.modules.candidate.CandidateEntity;
-import br.com.yagomarialva.gestaovagas.modules.candidate.CandidateRepository;
-import br.com.yagomarialva.gestaovagas.modules.candidate.UserFoundException;
+import br.com.yagomarialva.gestaovagas.modules.candidate.entities.CandidateEntity;
+import br.com.yagomarialva.gestaovagas.modules.candidate.repositories.CandidateRepository;
 import br.com.yagomarialva.gestaovagas.modules.company.dto.AuthCompanyDTO;
+import br.com.yagomarialva.gestaovagas.modules.company.entities.CompanyEntity;
 import br.com.yagomarialva.gestaovagas.modules.company.repositories.CompanyRepository;
+import br.com.yagomarialva.gestaovagas.modules.exceptions.UserFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 
 
 @Service
 public class CreateCandidateUseCase {
-    @Autowired
-  private CompanyRepository companyRepository;
-
-  @Value("${security.token.secret}")
-  private String secretKey;
+  @Autowired
+  private CandidateRepository candidateRepository;
 
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  public String execute(@Valid CandidateEntity candidateEntity) throws AuthenticationException {
-    var company = this.companyRepository.findByUsername(candidateEntity.getUsername()).orElseThrow(() -> {
-      throw new UsernameNotFoundException("Company not found");
-    });
+  public CandidateEntity execute(CandidateEntity candidateEntity) {
+    this.candidateRepository.findByUsernameOrEmail(candidateEntity.getUsername(),
+        candidateEntity.getEmail()).ifPresent(user -> {
+          throw new UserFoundException();
+        });
 
-    var passwordMatches = this.passwordEncoder.matches(candidateEntity.getPassword(), company.getPassword());
+    
+        var password = passwordEncoder.encode(candidateEntity.getPassword());
+        candidateEntity.setPassword(password);
 
-    if (!passwordMatches) {
-      throw new AuthenticationException();
-    }
-
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-
-    var token = JWT.create().withIssuer("javagas")
-        .withSubject(company.getId().toString()).sign(algorithm);
-
-    return token;
+    return this.candidateRepository.save(candidateEntity);
   }
-
 }
