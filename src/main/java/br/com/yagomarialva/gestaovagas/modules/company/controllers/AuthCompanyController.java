@@ -12,13 +12,13 @@ import br.com.yagomarialva.gestaovagas.modules.company.UseCases.AuthCompanyUseCa
 import br.com.yagomarialva.gestaovagas.modules.company.dto.AuthCompanyDTO;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/company")
 public class AuthCompanyController {
 
   @Autowired
   private AuthCompanyUseCase authCompanyUseCase;
 
-  @PostMapping("/company")
+  @PostMapping("/auth")
   public ResponseEntity<Object> create(@RequestBody AuthCompanyDTO authCompanyDTO) {
     try {
       var result = authCompanyUseCase.execute(authCompanyDTO);
